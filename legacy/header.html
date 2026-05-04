@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Header</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Header */
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #66c56a;
+            padding: 10px 15px;
+            color: white;
+        }
+
+        /* Left: Logo */
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 20px;
+            right: 100px;
+        }
+
+        .logo span {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Center: Navigation */
+        .nav-links a {
+            color: rgb(2, 1, 1);
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Right: User */
+        .user {
+            display: flex;
+            align-items: center;
+        }
+
+        .user img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .logout {
+            background: #1b5e20;
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .logout:hover {
+            background: #0d3b12;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ADMIN HEADER -->
+<div class="admin-header">
+
+    <!-- Left: Poultry Logo -->
+    <div class="logo">
+        <img src="poultry-logo.png" alt="Poultry Logo">
+        <span>Poultry Admin</span>
+    </div>
+
+    <!-- Center: Navigation Links -->
+    <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="income.html">Income</a>
+        <a href="expense.html">Expense</a>
+        <a href="profit.html">Profit</a>
+        <a href="reports.html">Reports</a>
+    </div>
+
+    <!-- Right: User Logo -->
+    <div class="user">
+        <img src="user.png" alt="Admin">
+        <button class="logout" onclick="logout()">Logout</button>
+    </div>
+
+</div>
+
+<script>
+    function logout() {
+        window.location.href = "login.html";
+    }
+</script>
+
+</body>
+</html>

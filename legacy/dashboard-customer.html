@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop — PoultrySmart</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--brand:#16a34a;--brand-dark:#14532d;--brand-light:#dcfce7;--accent:#f59e0b;--danger:#ef4444;--bg:#f0fdf4;--surface:#fff;--surface2:#f8fafc;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8}
+    [data-theme="dark"]{--bg:#060d09;--surface:#0f1a12;--surface2:#1a2e1f;--border:#2d4a35;--text:#f1fdf5;--text2:#a7c4ae;--text3:#5a7a62}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    /* NAVBAR */
+    .navbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .nav-brand{display:flex;align-items:center;gap:8px;font-family:'Poppins',sans-serif;font-size:18px;font-weight:900;color:var(--brand)}
+    .nav-actions{display:flex;align-items:center;gap:10px}
+    .icon-btn{width:36px;height:36px;border:1px solid var(--border);border-radius:8px;background:none;cursor:pointer;color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;position:relative}
+    .icon-btn:hover{border-color:var(--brand);color:var(--brand)}
+    .cart-badge{position:absolute;top:-5px;right:-5px;width:17px;height:17px;background:var(--danger);border-radius:50%;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .user-chip{display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;color:var(--text2)}
+    .user-chip .avatar{width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+    /* HERO BANNER */
+    .shop-hero{background:linear-gradient(135deg,#14532d,#166534,#15803d);padding:48px 24px;text-align:center;color:#fff}
+    .shop-hero h1{font-family:'Poppins',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:900;margin-bottom:10px}
+    .shop-hero p{font-size:16px;opacity:.8;margin-bottom:24px}
+    .search-bar{display:flex;max-width:520px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+    .search-bar input{flex:1;padding:14px 18px;border:none;outline:none;font-size:15px;font-family:'Inter',sans-serif;color:#0f172a}
+    .search-bar button{padding:14px 22px;background:var(--brand);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:.2s}
+    .search-bar button:hover{background:var(--brand-dark)}
+    /* CONTENT */
+    .shop-wrap{max-width:1200px;margin:0 auto;padding:32px 24px}
+    /* FILTERS */
+    .filter-row{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;align-items:center}
+    .filter-label{font-size:13px;font-weight:600;color:var(--text3);margin-right:4px}
+    .filter-chip{padding:7px 16px;border:2px solid var(--border);border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;background:var(--surface);color:var(--text2);transition:.2s}
+    .filter-chip:hover,.filter-chip.active{border-color:var(--brand);color:var(--brand);background:var(--brand-light)}
+    /* PRODUCTS GRID */
+    .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-bottom:40px}
+    .product-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:.25s}
+    .product-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.1)}
+    .card-img{background:linear-gradient(135deg,#f0fdf4,#dcfce7);height:160px;display:flex;align-items:center;justify-content:center;font-size:72px;position:relative}
+    .card-badge{position:absolute;top:10px;left:10px;padding:4px 10px;background:var(--brand);color:#fff;border-radius:8px;font-size:11px;font-weight:700}
+    .card-badge.organic{background:#16a34a}
+    .card-badge.fresh{background:#f59e0b}
+    .card-badge.topseller{background:#6366f1}
+    .card-body{padding:16px}
+    .card-farm{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+    .card-name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3}
+    .card-desc{font-size:13px;color:var(--text3);line-height:1.5;margin-bottom:12px}
+    .card-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .card-price{font-family:'Poppins',sans-serif;font-size:20px;font-weight:900;color:var(--brand)}
+    .card-price span{font-size:12px;font-weight:500;color:var(--text3)}
+    .card-rating{font-size:13px;color:var(--accent);font-weight:600}
+    .card-stock{font-size:11px;color:var(--text3);margin-bottom:12px}
+    .btn-add-cart{width:100%;padding:10px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;font-family:'Inter',sans-serif}
+    .btn-add-cart:hover{background:var(--brand-dark);transform:scale(1.02)}
+    .btn-add-cart.added{background:#6366f1}
+    /* ORDERS */
+    .section-title{font-family:'Poppins',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:16px}
+    .orders-list{display:flex;flex-direction:column;gap:12px;margin-bottom:40px}
+    .order-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;justify-content:space-between}
+    .order-id{font-size:13px;font-weight:700;color:var(--text)}
+    .order-product{font-size:13px;color:var(--text2)}
+    .order-amount{font-size:15px;font-weight:700;color:var(--brand)}
+    .badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700}
+    .badge.pending{background:#fef3c7;color:#b45309}
+    .badge.delivered{background:#dcfce7;color:#15803d}
+    .badge.dispatched{background:#dbeafe;color:#1d4ed8}
+    .badge.confirmed{background:#ede9fe;color:#6d28d9}
+    /* CART DRAWER */
+    .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none}
+    .cart-overlay.open{display:block}
+    .cart-drawer{position:fixed;right:0;top:0;bottom:0;width:380px;max-width:90vw;background:var(--surface);z-index:201;display:flex;flex-direction:column;transform:translateX(100%);transition:.3s ease;box-shadow:-4px 0 40px rgba(0,0,0,.15)}
+    .cart-drawer.open{transform:translateX(0)}
+    .cart-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .cart-header h3{font-size:18px;font-weight:700}
+    .cart-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)}
+    .cart-body{flex:1;overflow-y:auto;padding:20px 24px}
+    .cart-empty{text-align:center;padding:60px 0;color:var(--text3)}
+    .cart-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+    .ci-emoji{font-size:36px;width:50px;text-align:center;flex-shrink:0}
+    .ci-info{flex:1}
+    .ci-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px}
+    .ci-farm{font-size:12px;color:var(--text3)}
+    .ci-price{font-size:14px;font-weight:700;color:var(--brand);margin-top:4px}
+    .ci-qty{display:flex;align-items:center;gap:8px;margin-top:6px}
+    .qty-btn{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;font-size:14px;font-weight:700;color:var(--text)}
+    .qty-btn:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .cart-footer{padding:20px 24px;border-top:1px solid var(--border)}
+    .cart-total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;margin-bottom:16px}
+    .btn-checkout{width:100%;padding:13px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:.2s}
+    .btn-checkout:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(22,163,74,.35)}
+    @media(max-width:600px){.products-grid{grid-template-columns:1fr}.order-row{flex-wrap:wrap;gap:8px}}
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-brand">🐔 PoultrySmart</div>
+  <div class="nav-actions">
+    <div class="user-chip"><div class="avatar">PS</div><span id="userName">Priya</span></div>
+    <button class="icon-btn" onclick="toggleDark()" title="Dark mode">🌙</button>
+    <button class="icon-btn" onclick="openCart()" title="Cart">
+      🛒<span class="cart-badge" id="cart-badge">0</span>
+    </button>
+    <a href="login.html" style="padding:8px 14px;background:var(--danger);color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none">Logout</a>
+  </div>
+</nav>
+
+<!-- HERO BANNER -->
+<div class="shop-hero">
+  <h1>🥚 Fresh from Verified Farms</h1>
+  <p>Order directly from certified poultry farms — no middlemen, better prices</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search eggs, chicken, organic…" oninput="filterProducts()">
+    <button>🔍 Search</button>
+  </div>
+</div>
+
+<!-- SHOP CONTENT -->
+<div class="shop-wrap">
+
+  <!-- FILTERS -->
+  <div class="filter-row">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-chip active" onclick="setFilter('all',this)">All Products</button>
+    <button class="filter-chip" onclick="setFilter('eggs',this)">🥚 Eggs</button>
+    <button class="filter-chip" onclick="setFilter('chicken',this)">🐔 Chicken</button>
+    <button class="filter-chip" onclick="setFilter('organic',this)">🌿 Organic</button>
+    <button class="filter-chip" onclick="setFilter('fresh',this)">⚡ Fresh Today</button>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="products-grid" id="productsGrid"></div>
+
+  <!-- MY ORDERS -->
+  <div class="section-title">📦 My Recent Orders</div>
+  <div class="orders-list" id="ordersList"></div>
+
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>🛒 Your Cart</h3>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty">🛒<br><br>Your cart is empty.<br>Add some fresh produce!</div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <span>Subtotal</span>
+      <span id="cartTotal">₹0</span>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:14px">+ ₹40 delivery • Free above ₹500</div>
+    <button class="btn-checkout" onclick="checkout()">Proceed to Pay →</button>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script>
+  const user = PS.auth.restore();
+  if(!user || user.role !== 'customer') window.location.href = 'login.html';
+  document.getElementById('userName').textContent = user.name.split(' ')[0];
+
+  PS.cart.updateBadge();
+  let activeFilter = 'all', searchQ = '';
+
+  function renderProducts(){
+    const grid = document.getElementById('productsGrid');
+    let prods = PS.products.filter(p=>p.isActive);
+    if(activeFilter !== 'all'){
+      if(activeFilter==='fresh') prods=prods.filter(p=>p.isFreshToday);
+      else prods=prods.filter(p=>p.type===activeFilter);
+    }
+    if(searchQ) prods=prods.filter(p=>p.name.toLowerCase().includes(searchQ)||p.description.toLowerCase().includes(searchQ));
+    grid.innerHTML = prods.map(p=>{
+      const badgeClass = p.badge==='Organic'?'organic':p.badge==='Top Seller'?'topseller':'fresh';
+      return `<div class="product-card">
+        <div class="card-img">
+          ${p.emoji}
+          <span class="card-badge ${badgeClass}">${p.badge}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-farm">${p.farmName} ${p.isOrganic?'🌿':''}</div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-desc">${p.description}</div>
+          <div class="card-meta">
+            <div class="card-price">₹${p.pricePerUnit} <span>/${p.unit}</span></div>
+            <div class="card-rating">★ ${p.rating} <span style="color:var(--text3);font-size:11px">(${p.reviewCount})</span></div>
+          </div>
+          <div class="card-stock" style="margin-bottom:10px">📦 ${p.stock} ${p.unit}s in stock</div>
+          <button class="btn-add-cart" id="btn-${p.id}" onclick="addToCart('${p.id}',this)">🛒 Add to Cart</button>
+        </div>
+      </div>`;
+    }).join('') || '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text3)">No products found 🔍</div>';
+  }
+
+  function setFilter(f,btn){
+    activeFilter=f;
+    document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderProducts();
+  }
+
+  function filterProducts(){ searchQ=document.getElementById('searchInput').value.toLowerCase(); renderProducts(); }
+
+  function addToCart(id,btn){
+    PS.cart.add(id);
+    btn.textContent='✓ Added!';
+    btn.classList.add('added');
+    setTimeout(()=>{btn.textContent='🛒 Add to Cart';btn.classList.remove('added');},1500);
+    updateCartDrawer();
+  }
+
+  function updateCartDrawer(){
+    PS.cart.updateBadge();
+    const body=document.getElementById('cartBody');
+    const footer=document.getElementById('cartFooter');
+    if(PS.cart.items.length===0){
+      body.innerHTML='<div class="cart-empty">🛒<br><br>Your cart is empty.<br>Add some fresh produce!</div>';
+      footer.style.display='none';
+    } else {
+      body.innerHTML=PS.cart.items.map(i=>`
+        <div class="cart-item">
+          <div class="ci-emoji">${PS.products.find(p=>p.id===i.productId)?.emoji||'📦'}</div>
+          <div class="ci-info">
+            <div class="ci-name">${i.name}</div>
+            <div class="ci-farm">${i.farmName}</div>
+            <div class="ci-price">₹${i.price} / ${i.unit}</div>
+            <div class="ci-qty">
+              <button class="qty-btn" onclick="changeQty('${i.productId}',-1)">−</button>
+              <span style="font-weight:700;font-size:14px">${i.qty}</span>
+              <button class="qty-btn" onclick="changeQty('${i.productId}',1)">+</button>
+              <button onclick="PS.cart.remove('${i.productId}');updateCartDrawer()" style="margin-left:auto;background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px">Remove</button>
+            </div>
+          </div>
+        </div>`).join('');
+      document.getElementById('cartTotal').textContent='₹'+PS.cart.total().toLocaleString('en-IN');
+      footer.style.display='block';
+    }
+  }
+
+  function changeQty(id,delta){
+    const item=PS.cart.items.find(i=>i.productId===id);
+    if(!item) return;
+    item.qty=Math.max(1,item.qty+delta);
+    PS.cart.save();
+    updateCartDrawer();
+  }
+
+  function openCart(){ document.getElementById('cartDrawer').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); updateCartDrawer(); }
+  function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
+
+  function checkout(){
+    alert('✅ Order placed successfully!\n\nYour fresh produce will be delivered within 24 hours.\nPayment: COD\n\nThank you for choosing PoultrySmart!');
+    PS.cart.items=[];PS.cart.save();PS.cart.updateBadge();closeCart();
+  }
+
+  // My orders
+  const myOrders=PS.orders.filter(o=>o.customerId===user.id).slice(0,5);
+  document.getElementById('ordersList').innerHTML=myOrders.map(o=>`
+    <div class="order-row">
+      <div><div class="order-id">${o.id}</div><div class="order-product">${o.items[0].name}</div></div>
+      <div class="order-amount">₹${o.totalAmount.toLocaleString('en-IN')}</div>
+      <span class="badge ${o.status}">${o.status}</span>
+      <div style="font-size:12px;color:var(--text3)">${o.paymentMethod}</div>
+    </div>`).join('');
+
+  function toggleDark(){
+    const d=document.documentElement,next=d.getAttribute('data-theme')==='dark'?'light':'dark';
+    d.setAttribute('data-theme',next);
+  }
+
+  renderProducts();
+</script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmer Dashboard — PoultrySmart</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root{--brand:#16a34a;--brand-dark:#14532d;--brand-light:#dcfce7;--accent:#f59e0b;--danger:#ef4444;--bg:#f0fdf4;--surface:#fff;--surface2:#f8fafc;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--sidebar:220px}
+    [data-theme="dark"]{--bg:#060d09;--surface:#0f1a12;--surface2:#1a2e1f;--border:#2d4a35;--text:#f1fdf5;--text2:#a7c4ae;--text3:#5a7a62}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+    .sidebar{width:var(--sidebar);min-height:100vh;background:linear-gradient(180deg,#14532d,#166534);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100}
+    .sidebar-brand{padding:20px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .sidebar-brand .logo{font-size:26px}.sidebar-brand span{font-family:'Poppins',sans-serif;font-size:16px;font-weight:900;color:#fff}
+    .sidebar-nav{flex:1;padding:12px 10px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:rgba(255,255,255,.65);font-size:14px;font-weight:500;cursor:pointer;transition:.2s;margin-bottom:3px;text-decoration:none}
+    .nav-item:hover,.nav-item.active{background:rgba(255,255,255,.12);color:#fff}
+    .nav-item.active{background:rgba(74,222,128,.2);color:#4ade80}
+    .sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,.1)}
+    .user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.08);margin-bottom:8px}
+    .user-avatar{width:34px;height:34px;border-radius:50%;background:#16a34a;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+    .user-info strong{display:block;font-size:12px;font-weight:700;color:#fff}
+    .user-info span{font-size:10px;color:rgba(255,255,255,.5)}
+    .logout-btn{display:block;padding:8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:8px;color:#fca5a5;font-size:12px;font-weight:600;text-align:center;cursor:pointer;transition:.2s;text-decoration:none}
+    .logout-btn:hover{background:rgba(239,68,68,.3)}
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column}
+    .topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50}
+    .topbar h2{font-size:18px;font-weight:700}.topbar p{font-size:12px;color:var(--text3)}
+    .topbar-right{display:flex;align-items:center;gap:10px}
+    .icon-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:8px;background:none;cursor:pointer;color:var(--text2);font-size:15px;display:flex;align-items:center;justify-content:center;transition:.2s}
+    .icon-btn:hover{border-color:var(--brand);color:var(--brand)}
+    .lang-toggle{display:flex;gap:4px;background:var(--surface2);border-radius:8px;padding:3px}
+    .lang-btn{padding:4px 10px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:none;color:var(--text3);transition:.2s}
+    .lang-btn.active{background:var(--brand);color:#fff}
+    .content{padding:24px;flex:1}
+    .welcome-bar{background:linear-gradient(135deg,#14532d,#166534,#16a34a);border-radius:16px;padding:24px 28px;color:#fff;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+    .welcome-bar h3{font-family:'Poppins',sans-serif;font-size:22px;font-weight:900;margin-bottom:4px}
+    .welcome-bar p{font-size:14px;opacity:.75}
+    .weather-pill{background:rgba(255,255,255,.15);border-radius:10px;padding:10px 16px;text-align:center;backdrop-filter:blur(8px)}
+    .weather-pill .wicon{font-size:28px;display:block}
+    .weather-pill span{font-size:12px;opacity:.8}
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+    .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;transition:.2s}
+    .kpi-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.08)}
+    .kpi-icon{font-size:28px;margin-bottom:10px}
+    .kpi-val{font-family:'Poppins',sans-serif;font-size:26px;font-weight:900;color:var(--text);line-height:1}
+    .kpi-label{font-size:12px;color:var(--text3);margin-top:5px;font-weight:500}
+    .kpi-trend{font-size:11px;font-weight:700;margin-top:6px;color:var(--brand)}
+    .charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+    .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+    .chart-card h3{font-size:15px;font-weight:700;margin-bottom:4px}
+    .chart-card p{font-size:12px;color:var(--text3);margin-bottom:16px}
+    .chart-wrap{position:relative;height:220px}
+    .tables-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+    .table-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;overflow:hidden}
+    .table-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .table-header h3{font-size:14px;font-weight:700}
+    table{width:100%;border-collapse:collapse}
+    th{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:7px 8px;text-align:left;border-bottom:1px solid var(--border)}
+    td{font-size:12px;color:var(--text2);padding:9px 8px;border-bottom:1px solid var(--border)}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--surface2)}
+    .badge{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700}
+    .badge.healthy{background:#dcfce7;color:#15803d}
+    .badge.monitor{background:#fef3c7;color:#b45309}
+    .badge.active{background:#ede9fe;color:#6d28d9}
+    .fin-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+    .fin-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+    .fin-row:last-child{border-bottom:none}
+    .fin-label{font-size:13px;color:var(--text2)}
+    .fin-amount{font-size:15px;font-weight:700}
+    .fin-amount.income{color:var(--brand)}
+    .fin-amount.expense{color:var(--danger)}
+    .fin-amount.profit{color:var(--brand);font-size:20px}
+    .alert-card{background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1px solid #fed7aa;border-radius:14px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start;margin-bottom:24px}
+    .alert-icon{font-size:24px;flex-shrink:0}
+    .alert-body strong{display:block;font-size:14px;font-weight:700;color:#92400e;margin-bottom:4px}
+    .alert-body p{font-size:13px;color:#b45309;line-height:1.5}
+    .add-entry-row{display:flex;gap:10px;margin-bottom:24px}
+    .add-btn{flex:1;padding:12px;border:2px dashed var(--border);border-radius:12px;background:none;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;transition:.2s;font-family:'Inter',sans-serif}
+    .add-btn:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-light)}
+    @media(max-width:1024px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.charts-row,.tables-row{grid-template-columns:1fr}}
+    @media(max-width:768px){.sidebar{display:none}.main{margin-left:0}}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-brand"><span class="logo">🌾</span><span>PoultrySmart</span></div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="#"><span>📊</span> Dashboard</a>
+    <a class="nav-item" href="#"><span>🐔</span> My Flocks</a>
+    <a class="nav-item" href="#"><span>🥚</span> Egg Records</a>
+    <a class="nav-item" href="#"><span>🌾</span> Feed Logs</a>
+    <a class="nav-item" href="#"><span>🏥</span> Health & Vaccines</a>
+    <a class="nav-item" href="#"><span>💰</span> Income & Expenses</a>
+    <a class="nav-item" href="#"><span>🛒</span> My Products</a>
+    <a class="nav-item" href="#"><span>📦</span> Orders</a>
+    <a class="nav-item" href="#"><span>📈</span> Reports</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar">RK</div>
+      <div class="user-info"><strong>Ravi Kumar</strong><span>Nashik, Maharashtra</span></div>
+    </div>
+    <a class="logout-btn" href="login.html">🚪 Logout</a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div><h2 id="welcome">Welcome, Ravi 🌾</h2><p id="todayDate">Loading…</p></div>
+    <div class="topbar-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+        <button class="lang-btn" onclick="setLang('hi',this)">हि</button>
+        <button class="lang-btn" onclick="setLang('mr',this)">म</button>
+      </div>
+      <button class="icon-btn" onclick="toggleDark()">🌙</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- WELCOME BAR -->
+    <div class="welcome-bar">
+      <div>
+        <h3 id="wbGreeting">Good Morning, Ravi! 🌅</h3>
+        <p>Ravi's Green Farm · Nashik, Maharashtra · 3 Active Sheds</p>
+      </div>
+      <div class="weather-pill">
+        <span class="wicon">☀️</span>
+        <span>28°C · Sunny</span>
+      </div>
+    </div>
+
+    <!-- ALERT -->
+    <div class="alert-card">
+      <div class="alert-icon">💉</div>
+      <div class="alert-body">
+        <strong>Vaccination Due in 3 Days!</strong>
+        <p>Newcastle Disease vaccine is scheduled for Shed A (BV-300 flock, 1,948 birds) on May 5th. Please contact your vet to confirm.</p>
+      </div>
+    </div>
+
+    <!-- QUICK ADD -->
+    <div class="add-entry-row">
+      <button class="add-btn" onclick="showModal('eggs')">🥚 Record Eggs</button>
+      <button class="add-btn" onclick="showModal('income')">💰 Add Income</button>
+      <button class="add-btn" onclick="showModal('expense')">💸 Add Expense</button>
+      <button class="add-btn" onclick="showModal('mortality')">⚰️ Log Mortality</button>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">🐔</div>
+        <div class="kpi-val" id="kBirds">0</div>
+        <div class="kpi-label" id="lBirds">Live Birds</div>
+        <div class="kpi-trend">3 Sheds Active</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🥚</div>
+        <div class="kpi-val" id="kEggs">0</div>
+        <div class="kpi-label" id="lEggs">Today's Eggs</div>
+        <div class="kpi-trend">↑ 87.2% production rate</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-val" id="kRevenue">₹0</div>
+        <div class="kpi-label" id="lRevenue">Monthly Revenue</div>
+        <div class="kpi-trend">↑ 9% vs last month</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">📦</div>
+        <div class="kpi-val" id="kOrders">0</div>
+        <div class="kpi-label" id="lOrders">Pending Orders</div>
+        <div class="kpi-trend">⚠ Needs dispatch</div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>Egg Production — Last 14 Days</h3>
+        <p>Net eggs collected per day across all sheds</p>
+        <div class="chart-wrap"><canvas id="eggChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Income vs Expense</h3>
+        <p>This month breakdown</p>
+        <div class="chart-wrap"><canvas id="finChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TABLES -->
+    <div class="tables-row">
+      <div class="table-card">
+        <div class="table-header"><h3>🐔 My Flocks</h3></div>
+        <table>
+          <thead><tr><th>Shed</th><th>Breed</th><th>Birds</th><th>Age</th><th>Health</th></tr></thead>
+          <tbody id="flocksTable"></tbody>
+        </table>
+      </div>
+      <div class="fin-card">
+        <div class="table-header"><h3>💰 This Month's Financials</h3></div>
+        <div id="finRows"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border-radius:16px;padding:28px;width:380px;max-width:90vw">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 id="modalTitle" style="font-size:18px;font-weight:700">Add Entry</h3>
+      <button onclick="document.getElementById('modal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)">✕</button>
+    </div>
+    <div id="modalBody"></div>
+    <button onclick="alert('Saved! (Demo mode)');document.getElementById('modal').style.display='none'" style="width:100%;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px">Save Entry</button>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script>
+  const user = PS.auth.restore();
+  if(!user || user.role !== 'farmer') window.location.href = 'login.html';
+
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const hour = new Date().getHours();
+  const greet = hour<12?'Good Morning':hour<17?'Good Afternoon':'Good Evening';
+  document.getElementById('wbGreeting').textContent = `${greet}, Ravi! ${hour<12?'🌅':hour<17?'☀️':'🌙'}`;
+
+  function animCount(id,target,prefix='',suffix=''){
+    const el=document.getElementById(id);
+    let t0=performance.now(),dur=1600;
+    requestAnimationFrame(function t(now){
+      const p=Math.min((now-t0)/dur,1),v=Math.round(target*(1-Math.pow(1-p,3)));
+      el.textContent=prefix+v.toLocaleString('en-IN')+suffix;
+      if(p<1)requestAnimationFrame(t);
+    });
+  }
+  animCount('kBirds',PS.stats.totalBirds());
+  animCount('kEggs',PS.stats.todayEggs());
+  animCount('kOrders',PS.stats.pendingOrders());
+  setTimeout(()=>{document.getElementById('kRevenue').textContent='₹'+PS.stats.monthRevenue().toLocaleString('en-IN');},100);
+
+  // Flocks table
+  const fb=document.getElementById('flocksTable');
+  PS.flocks.filter(f=>f.farmId==='f1').forEach(f=>{
+    fb.innerHTML+=`<tr><td><strong>${f.shed}</strong></td><td>${f.breed}</td><td>${f.currentCount.toLocaleString('en-IN')}</td><td>${f.ageWeeks}w</td><td><span class="badge ${f.healthStatus}">${f.healthStatus}</span></td></tr>`;
+  });
+
+  // Financials
+  const mo=new Date().toISOString().substr(0,7);
+  const inc=PS.transactions.filter(t=>t.farmId==='f1'&&t.type==='income'&&t.date.startsWith(mo)).reduce((s,t)=>s+t.amount,0)||91400;
+  const exp=PS.transactions.filter(t=>t.farmId==='f1'&&t.type==='expense'&&t.date.startsWith(mo)).reduce((s,t)=>s+t.amount,0)||63000;
+  const fin=[
+    {label:'🥚 Egg Sales Income',amount:inc,type:'income'},
+    {label:'🌾 Feed Expenses',amount:42000,type:'expense'},
+    {label:'💊 Medicine & Vaccines',amount:4200,type:'expense'},
+    {label:'👷 Labor Wages',amount:16800,type:'expense'},
+    {label:'📈 Net Profit',amount:inc-exp,type:'profit'}
+  ];
+  const fr=document.getElementById('finRows');
+  fin.forEach(f=>{
+    fr.innerHTML+=`<div class="fin-row"><span class="fin-label">${f.label}</span><span class="fin-amount ${f.type}">${f.amount<0?'-':''}₹${Math.abs(f.amount).toLocaleString('en-IN')}</span></div>`;
+  });
+
+  // Egg chart
+  const logs=PS.productionLogs.slice(-42);
+  const dates=[...new Set(logs.map(l=>l.date))].slice(-14);
+  const vals=dates.map(d=>logs.filter(l=>l.date===d).reduce((s,l)=>s+l.netEggs,0));
+  const tc=()=>document.documentElement.getAttribute('data-theme')==='dark'?'#a7c4ae':'#475569';
+  const gc=()=>document.documentElement.getAttribute('data-theme')==='dark'?'rgba(255,255,255,.06)':'rgba(0,0,0,.05)';
+  new Chart(document.getElementById('eggChart'),{
+    type:'line',
+    data:{labels:dates.map(d=>d.slice(5)),datasets:[{label:'Net Eggs',data:vals,borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,.1)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#16a34a'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc(),maxTicksLimit:7},grid:{color:gc()}},y:{ticks:{color:tc()},grid:{color:gc()}}}}
+  });
+  new Chart(document.getElementById('finChart'),{
+    type:'doughnut',
+    data:{labels:['Feed','Medicine','Labor','Profit'],datasets:[{data:[42000,4200,16800,inc-exp],backgroundColor:['#f59e0b','#ef4444','#6366f1','#16a34a'],borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tc()},position:'bottom'}}}
+  });
+
+  const modals={
+    eggs:`<div style="display:flex;flex-direction:column;gap:12px"><label style="font-size:13px;font-weight:600">Shed</label><select style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"><option>Shed A</option><option>Shed B</option><option>Shed C</option></select><label style="font-size:13px;font-weight:600">Total Eggs Collected</label><input type="number" placeholder="e.g. 1720" style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"><label style="font-size:13px;font-weight:600">Broken Eggs</label><input type="number" placeholder="e.g. 12" style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"></div>`,
+    income:`<div style="display:flex;flex-direction:column;gap:12px"><label style="font-size:13px;font-weight:600">Category</label><select style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"><option>Egg Sales</option><option>Chicken Sales</option><option>Manure Sales</option><option>Other</option></select><label style="font-size:13px;font-weight:600">Amount (₹)</label><input type="number" placeholder="e.g. 14500" style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"><label style="font-size:13px;font-weight:600">Notes</label><input type="text" placeholder="Optional description" style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"></div>`,
+    expense:`<div style="display:flex;flex-direction:column;gap:12px"><label style="font-size:13px;font-weight:600">Category</label><select style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"><option>Feed</option><option>Medicine</option><option>Labor</option><option>Equipment</option><option>Electricity</option><option>Other</option></select><label style="font-size:13px;font-weight:600">Amount (₹)</label><input type="number" placeholder="e.g. 9600" style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"></div>`,
+    mortality:`<div style="display:flex;flex-direction:column;gap:12px"><label style="font-size:13px;font-weight:600">Shed</label><select style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"><option>Shed A</option><option>Shed B</option><option>Shed C</option></select><label style="font-size:13px;font-weight:600">Number of Deaths</label><input type="number" placeholder="e.g. 3" style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"><label style="font-size:13px;font-weight:600">Cause</label><select style="padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)"><option>Unknown</option><option>Disease</option><option>Heat Stress</option><option>Predator</option><option>Injury</option></select></div>`
+  };
+  function showModal(type){
+    const titles={eggs:'🥚 Record Egg Collection',income:'💰 Add Income Entry',expense:'💸 Add Expense Entry',mortality:'⚰️ Log Mortality'};
+    document.getElementById('modalTitle').textContent=titles[type];
+    document.getElementById('modalBody').innerHTML=modals[type];
+    document.getElementById('modal').style.display='flex';
+  }
+  function setLang(lang,btn){
+    PS.i18n.set(lang);
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const s=PS.i18n.strings[lang]||PS.i18n.strings.en;
+    document.getElementById('lBirds').textContent=s.liveBirds;
+    document.getElementById('lEggs').textContent=s.todayEggs;
+    document.getElementById('lRevenue').textContent=s.monthRevenue;
+  }
+  function toggleDark(){
+    const d=document.documentElement,next=d.getAttribute('data-theme')==='dark'?'light':'dark';
+    d.setAttribute('data-theme',next);
+  }
+</script>
+</body>
+</html>

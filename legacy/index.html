@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PoultrySmart — India's #1 Poultry Farm Management Platform</title>
+  <meta name="description" content="PoultrySmart connects verified poultry farms with customers across India. Track eggs, manage flocks, sell fresh produce — all in one powerful platform.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style-main.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <span class="brand-icon">🐔</span>
+      <span class="brand-name">PoultrySmart</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#testimonials">Testimonials</a></li>
+      <li><a href="#stats">Impact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button id="dark-toggle" class="icon-btn" aria-label="Toggle dark mode">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="login.html" class="btn-outline">Sign In</a>
+      <a href="login.html" class="btn-primary btn-ripple">Get Started Free</a>
+    </div>
+    <button id="hamburger" class="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div id="mobile-nav" class="mobile-nav">
+  <button id="mobile-close" class="mobile-close">✕</button>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#testimonials">Testimonials</a></li>
+    <li><a href="login.html" class="btn-primary">Get Started</a></li>
+  </ul>
+</div>
+
+<!-- HERO -->
+<section class="hero-wrap" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge reveal">🏆 Trusted by 12,400+ Farms Across India</div>
+    <h1 class="hero-title reveal-up">
+      Smarter Farms.<br><span class="gradient-text">Better Profits.</span>
+    </h1>
+    <p class="hero-subtitle reveal-up" data-delay="100">
+      The all-in-one platform to manage your flock, track egg production, record finances, and sell directly to customers — in English, Hindi & Marathi.
+    </p>
+    <div class="hero-cta reveal-up" data-delay="200">
+      <a href="login.html" class="btn-hero btn-ripple">🚀 Start Managing Free</a>
+      <a href="#features" class="btn-hero-ghost">See How It Works ↓</a>
+    </div>
+    <div class="hero-roles reveal-up" data-delay="300">
+      <span>Login as:</span>
+      <a href="login.html?role=admin" class="role-chip">👑 Admin</a>
+      <a href="login.html?role=farmer" class="role-chip">🌾 Farmer</a>
+      <a href="login.html?role=customer" class="role-chip">🛒 Customer</a>
+    </div>
+  </div>
+  <div class="hero-mockup reveal-scale" data-delay="400">
+    <div class="mockup-card tilt-card">
+      <div class="mockup-header">
+        <div class="mockup-dots"><span></span><span></span><span></span></div>
+        <span class="mockup-title">Ravi's Green Farm — Live Dashboard</span>
+      </div>
+      <div class="mockup-stats">
+        <div class="mockup-stat">
+          <span class="mstat-icon">🥚</span>
+          <span class="mstat-val">4,280</span>
+          <span class="mstat-label">Eggs Today</span>
+        </div>
+        <div class="mockup-stat">
+          <span class="mstat-icon">🐔</span>
+          <span class="mstat-val">4,948</span>
+          <span class="mstat-label">Live Birds</span>
+        </div>
+        <div class="mockup-stat green">
+          <span class="mstat-icon">💰</span>
+          <span class="mstat-val">₹91K</span>
+          <span class="mstat-label">This Month</span>
+        </div>
+      </div>
+      <div class="mockup-chart">
+        <svg viewBox="0 0 260 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="0,70 30,55 60,62 90,40 120,45 150,28 180,32 210,18 240,22 260,10" stroke="url(#cg)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <defs><linearGradient id="cg" x1="0" y1="0" x2="260" y2="0"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#16a34a"/></linearGradient></defs>
+        </svg>
+        <span class="chart-label">📈 Egg production trending up 12% this week</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section" id="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <span class="stat-num counter" data-target="48200000" data-suffix=" Eggs">0</span>
+        <span class="stat-desc">Eggs Tracked Platform-wide</span>
+      </div>
+      <div class="stat-item reveal" data-delay="100">
+        <span class="stat-num counter" data-target="12400" data-suffix="+ Farms">0</span>
+        <span class="stat-desc">Verified Farms Registered</span>
+      </div>
+      <div class="stat-item reveal" data-delay="200">
+        <span class="stat-num counter" data-target="3100000" data-suffix="+ Orders">0</span>
+        <span class="stat-desc">Orders Fulfilled</span>
+      </div>
+      <div class="stat-item reveal" data-delay="300">
+        <span class="stat-num counter" data-target="24" data-prefix="₹" data-suffix="Cr+ Revenue">0</span>
+        <span class="stat-desc">Farmer Income Generated</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Why PoultrySmart?</span>
+      <h2 class="section-title">Everything Your Farm Needs</h2>
+      <p class="section-sub">From flock management to direct customer sales — all in one powerful, easy-to-use platform.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card tilt-card reveal" data-delay="0">
+        <div class="feat-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)">📊</div>
+        <h3>Live Dashboard</h3>
+        <p>Real-time egg counts, bird health alerts, mortality tracking, and financial summaries — all visible at a glance.</p>
+        <ul class="feat-list">
+          <li>✓ Daily egg production logs</li>
+          <li>✓ Mortality & health alerts</li>
+          <li>✓ Animated counter stats</li>
+        </ul>
+      </div>
+      <div class="feature-card tilt-card reveal" data-delay="80">
+        <div class="feat-icon" style="background:linear-gradient(135deg,#34d399,#10b981)">💰</div>
+        <h3>Financial Tracking</h3>
+        <p>Record income, expenses, and auto-calculate profit/loss. Generate reports in seconds for any time period.</p>
+        <ul class="feat-list">
+          <li>✓ Income vs expense charts</li>
+          <li>✓ Monthly P&L report</li>
+          <li>✓ Category-wise breakdown</li>
+        </ul>
+      </div>
+      <div class="feature-card tilt-card reveal" data-delay="160">
+        <div class="feat-icon" style="background:linear-gradient(135deg,#818cf8,#6366f1)">🛒</div>
+        <h3>Direct Sales</h3>
+        <p>List your eggs and poultry products. Customers order directly — no middlemen, better prices for farmers.</p>
+        <ul class="feat-list">
+          <li>✓ Product listings</li>
+          <li>✓ Order management</li>
+          <li>✓ UPI & COD payments</li>
+        </ul>
+      </div>
+      <div class="feature-card tilt-card reveal" data-delay="240">
+        <div class="feat-icon" style="background:linear-gradient(135deg,#f87171,#ef4444)">🏥</div>
+        <h3>Health Management</h3>
+        <p>Track vaccinations, medication schedules, and get automated alerts when health actions are due.</p>
+        <ul class="feat-list">
+          <li>✓ Vaccination reminders</li>
+          <li>✓ Vet visit logs</li>
+          <li>✓ Disease outbreak alerts</li>
+        </ul>
+      </div>
+      <div class="feature-card tilt-card reveal" data-delay="320">
+        <div class="feat-icon" style="background:linear-gradient(135deg,#38bdf8,#0ea5e9)">🌐</div>
+        <h3>Bilingual Interface</h3>
+        <p>Switch seamlessly between English, Hindi, and Marathi. Designed for Indian farmers first.</p>
+        <ul class="feat-list">
+          <li>✓ English / हिंदी / मराठी</li>
+          <li>✓ Farmer-friendly UI</li>
+          <li>✓ Large tap targets</li>
+        </ul>
+      </div>
+      <div class="feature-card tilt-card reveal" data-delay="400">
+        <div class="feat-icon" style="background:linear-gradient(135deg,#fb923c,#f97316)">📱</div>
+        <h3>Mobile First</h3>
+        <p>Works perfectly on any smartphone. No app install needed — just open the browser and start managing.</p>
+        <ul class="feat-list">
+          <li>✓ Fully responsive</li>
+          <li>✓ Offline data storage</li>
+          <li>✓ Works on 4G/2G</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how-it-works">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Simple Process</span>
+      <h2 class="section-title">Up & Running in 3 Steps</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-item reveal">
+        <div class="step-num">01</div>
+        <div class="step-icon">📝</div>
+        <h3>Register Your Farm</h3>
+        <p>Sign up as a farmer, add your farm details, and get verified by our team within 24 hours.</p>
+      </div>
+      <div class="step-connector reveal"></div>
+      <div class="step-item reveal" data-delay="150">
+        <div class="step-num">02</div>
+        <div class="step-icon">📊</div>
+        <h3>Record & Track</h3>
+        <p>Log daily egg production, feed costs, bird health, and transactions right from your phone.</p>
+      </div>
+      <div class="step-connector reveal" data-delay="150"></div>
+      <div class="step-item reveal" data-delay="300">
+        <div class="step-num">03</div>
+        <div class="step-icon">💸</div>
+        <h3>Sell & Earn More</h3>
+        <p>List your products, receive orders directly, and get paid — no commission, no middlemen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLE CARDS -->
+<section class="roles-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">For Everyone</span>
+      <h2 class="section-title">Your Role, Your Dashboard</h2>
+    </div>
+    <div class="roles-grid">
+      <div class="role-card admin-card tilt-card reveal">
+        <div class="role-icon">👑</div>
+        <h3>Admin</h3>
+        <p>Full platform control. Manage farms, users, approvals, and view platform-wide analytics.</p>
+        <a href="login.html?role=admin" class="role-btn">Admin Login →</a>
+        <div class="role-cred">admin@poultrysmart.in / admin123</div>
+      </div>
+      <div class="role-card farmer-card tilt-card reveal" data-delay="120">
+        <div class="role-icon">🌾</div>
+        <h3>Farmer</h3>
+        <p>Track your flocks, record production, manage finances, and list products for sale.</p>
+        <a href="login.html?role=farmer" class="role-btn">Farmer Login →</a>
+        <div class="role-cred">ravi@farm.in / farmer123</div>
+      </div>
+      <div class="role-card customer-card tilt-card reveal" data-delay="240">
+        <div class="role-icon">🛒</div>
+        <h3>Customer</h3>
+        <p>Browse fresh eggs and poultry from verified farms near you. Order online, pay easily.</p>
+        <a href="login.html?role=customer" class="role-btn">Shop Now →</a>
+        <div class="role-cred">priya@gmail.com / customer123</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section" id="testimonials">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Real Stories</span>
+      <h2 class="section-title">Farmers Love PoultrySmart</h2>
+    </div>
+    <div class="testimonial-carousel reveal">
+      <div class="carousel-track">
+        <div class="testimonial-slide">
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p>"PoultrySmart ने माझ्या शेतीत क्रांती केली. आता मी माझ्या अंड्यांचे उत्पन्न रोज tracking करतो आणि थेट ग्राहकांना विकतो."</p>
+            <div class="testi-author">
+              <div class="testi-avatar">RK</div>
+              <div>
+                <strong>Ravi Kumar</strong>
+                <span>Nashik Farm — 5,000 birds</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-slide">
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p>"The financial tracking feature saved me hours every month. I can now see my profits and losses clearly and make better decisions."</p>
+            <div class="testi-author">
+              <div class="testi-avatar">SD</div>
+              <div>
+                <strong>Sunita Devi</strong>
+                <span>Amravati Poultry Hub — 3,200 birds</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-slide">
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p>"Vaccination reminders and health alerts have reduced my flock mortality by 40%. This app pays for itself in one week!"</p>
+            <div class="testi-author">
+              <div class="testi-avatar">MA</div>
+              <div>
+                <strong>Mohammed Ali</strong>
+                <span>Aurangabad Agro Farm — 8,000 birds</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button id="carousel-prev" class="carousel-btn">←</button>
+        <div class="carousel-dots">
+          <span class="carousel-dot active"></span>
+          <span class="carousel-dot"></span>
+          <span class="carousel-dot"></span>
+        </div>
+        <button id="carousel-next" class="carousel-btn">→</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-card reveal">
+      <h2>Ready to Transform Your Farm?</h2>
+      <p>Join 12,400+ farmers already using PoultrySmart. Free forever for basic plan.</p>
+      <div class="cta-btns">
+        <a href="login.html?role=farmer" class="btn-hero btn-ripple">🌾 Register as Farmer</a>
+        <a href="login.html?role=customer" class="btn-hero-ghost">🛒 Browse Products</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-brand">
+          <span class="brand-icon">🐔</span>
+          <span class="brand-name">PoultrySmart</span>
+        </div>
+        <p>India's most trusted poultry farm management and marketplace platform.</p>
+        <div class="footer-lang">
+          <button data-lang="en" class="lang-btn active">EN</button>
+          <button data-lang="hi" class="lang-btn">हिं</button>
+          <button data-lang="mr" class="lang-btn">मर</button>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="login.html?role=farmer">For Farmers</a></li>
+          <li><a href="login.html?role=customer">For Customers</a></li>
+          <li><a href="login.html?role=admin">Admin Portal</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Poultry Guides</a></li>
+          <li><a href="#">Market Prices</a></li>
+          <li><a href="#">Disease Library</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li>📞 1800-XXX-XXXX (Toll Free)</li>
+          <li>📧 support@poultrysmart.in</li>
+          <li>🕐 Mon–Sat 9am–6pm</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 PoultrySmart. Made with ❤️ for Indian Farmers.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/animations.js"></script>
+<script>
+  // Particle generation
+  const particlesContainer = document.getElementById('particles');
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${3+Math.random()*6}px;height:${3+Math.random()*6}px;animation-delay:${Math.random()*8}s;animation-duration:${6+Math.random()*8}s`;
+    particlesContainer.appendChild(p);
+  }
+</script>
+</body>
+</html>

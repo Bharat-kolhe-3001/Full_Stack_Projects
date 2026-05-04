@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — PoultrySmart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--brand:#16a34a;--brand-dark:#14532d;--accent:#f59e0b}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;min-height:100vh;display:flex;overflow:hidden;background:#0a2e18}
+    /* Split layout */
+    .left-panel{width:45%;min-height:100vh;background:linear-gradient(145deg,#0a2e18,#1a4a2a,#0f3d20);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 48px;position:relative;overflow:hidden}
+    .left-panel::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:rgba(22,163,74,.15);filter:blur(80px)}
+    .left-panel::after{content:'';position:absolute;bottom:-100px;left:-100px;width:300px;height:300px;border-radius:50%;background:rgba(16,185,129,.1);filter:blur(60px)}
+    .left-brand{position:relative;z-index:1;text-align:center;margin-bottom:48px}
+    .left-brand .logo{font-size:56px;display:block;margin-bottom:8px}
+    .left-brand h1{font-family:'Poppins',sans-serif;font-size:32px;font-weight:900;color:#fff;margin-bottom:6px}
+    .left-brand p{font-size:15px;color:rgba(255,255,255,.6);line-height:1.6}
+    .role-selector{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px;position:relative;z-index:1}
+    .role-btn{display:flex;align-items:center;gap:16px;padding:18px 22px;border-radius:14px;border:2px solid transparent;cursor:pointer;transition:.25s ease;background:rgba(255,255,255,.06);color:#fff}
+    .role-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);transform:translateX(4px)}
+    .role-btn.active{background:rgba(22,163,74,.25);border-color:#16a34a}
+    .role-btn .role-emoji{font-size:28px}
+    .role-btn .role-info strong{display:block;font-size:16px;font-weight:700}
+    .role-btn .role-info span{font-size:12px;color:rgba(255,255,255,.55);font-style:italic}
+    /* Right panel */
+    .right-panel{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 48px;background:#fff;position:relative;overflow-y:auto}
+    [data-theme="dark"] .right-panel{background:#0f1a12}
+    .dark-toggle{position:absolute;top:24px;right:24px;background:none;border:2px solid #e2e8f0;border-radius:8px;padding:6px 10px;cursor:pointer;color:#64748b;transition:.2s}
+    .dark-toggle:hover{border-color:#16a34a;color:#16a34a}
+    .login-form-wrap{width:100%;max-width:400px}
+    .form-greeting{font-size:13px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+    .form-title{font-family:'Poppins',sans-serif;font-size:32px;font-weight:900;color:#0f172a;margin-bottom:6px}
+    [data-theme="dark"] .form-title{color:#f1fdf5}
+    .form-sub{font-size:15px;color:#64748b;margin-bottom:36px}
+    .form-group{margin-bottom:20px}
+    .form-group label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px}
+    [data-theme="dark"] .form-group label{color:#a7c4ae}
+    .form-control{width:100%;padding:13px 16px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;font-family:'Inter',sans-serif;color:#0f172a;background:#f8fafc;transition:.2s;outline:none}
+    [data-theme="dark"] .form-control{background:#1a2e1f;border-color:#2d4a35;color:#f1fdf5}
+    .form-control:focus{border-color:#16a34a;background:#fff;box-shadow:0 0 0 4px rgba(22,163,74,.1)}
+    [data-theme="dark"] .form-control:focus{background:#0f1a12}
+    .input-with-icon{position:relative}
+    .input-with-icon .form-control{padding-left:44px}
+    .input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none}
+    .pass-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:14px;padding:2px}
+    .pass-toggle:hover{color:#16a34a}
+    .demo-cred{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:12px;color:#15803d;margin-bottom:20px;display:flex;align-items:center;gap:8px;font-family:monospace}
+    [data-theme="dark"] .demo-cred{background:#0f2a18;border-color:#1a4a2a;color:#4ade80}
+    .btn-login{width:100%;padding:14px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:.25s;position:relative;overflow:hidden}
+    .btn-login:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(22,163,74,.35)}
+    .btn-login:active{transform:translateY(0)}
+    .btn-login.loading::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);animation:shimmer 1s linear infinite}
+    @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+    .form-error{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;margin-bottom:16px;display:none;align-items:center;gap:8px}
+    .form-error.show{display:flex}
+    .form-footer{margin-top:28px;padding-top:24px;border-top:1px solid #e2e8f0;text-align:center}
+    [data-theme="dark"] .form-footer{border-color:#2d4a35}
+    .form-footer p{font-size:13px;color:#94a3b8}
+    .form-footer a{color:#16a34a;font-weight:600}
+    .tab-switcher{display:flex;gap:4px;background:#f1f5f9;border-radius:10px;padding:4px;margin-bottom:28px}
+    [data-theme="dark"] .tab-switcher{background:#1a2e1f}
+    .tab-btn{flex:1;padding:9px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:none;color:#64748b;transition:.2s}
+    .tab-btn.active{background:#fff;color:#16a34a;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+    [data-theme="dark"] .tab-btn.active{background:#0f1a12;color:#4ade80}
+
+    @media(max-width:768px){
+      .left-panel{display:none}
+      .right-panel{padding:40px 24px}
+    }
+  </style>
+</head>
+<body>
+<div class="left-panel">
+  <div class="left-brand">
+    <span class="logo">🐔</span>
+    <h1>PoultrySmart</h1>
+    <p>India's #1 Poultry Farm<br>Management Platform</p>
+  </div>
+  <div class="role-selector" id="roleSelector">
+    <button class="role-btn active" onclick="selectRole('admin',this)">
+      <span class="role-emoji">👑</span>
+      <div class="role-info">
+        <strong>Admin</strong>
+        <span>Platform management & analytics</span>
+      </div>
+    </button>
+    <button class="role-btn" onclick="selectRole('farmer',this)">
+      <span class="role-emoji">🌾</span>
+      <div class="role-info">
+        <strong>Farmer</strong>
+        <span>Flock, eggs & finance tracking</span>
+      </div>
+    </button>
+    <button class="role-btn" onclick="selectRole('customer',this)">
+      <span class="role-emoji">🛒</span>
+      <div class="role-info">
+        <strong>Customer</strong>
+        <span>Browse & order fresh produce</span>
+      </div>
+    </button>
+  </div>
+</div>
+
+<div class="right-panel">
+  <button class="dark-toggle" id="dark-toggle" onclick="toggleDark()">🌙</button>
+  <div class="login-form-wrap">
+    <div class="tab-switcher">
+      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginSection">
+      <div class="form-greeting" id="formGreeting">Admin Portal</div>
+      <h2 class="form-title">Welcome back 👋</h2>
+      <p class="form-sub">Sign in to access your dashboard</p>
+
+      <div class="demo-cred" id="demoCred">
+        💡 Demo: <strong id="demoEmail">admin@poultrysmart.in</strong> / <strong id="demoPass">admin123</strong>
+      </div>
+
+      <div class="form-error" id="formError">❌ <span id="errorMsg">Invalid email or password</span></div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-with-icon">
+          <span class="input-icon">📧</span>
+          <input type="email" id="loginEmail" class="form-control" placeholder="your@email.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-with-icon">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="loginPassword" class="form-control" placeholder="Your password">
+          <button class="pass-toggle" onclick="togglePass()">👁</button>
+        </div>
+      </div>
+
+      <button class="btn-login" id="loginBtn" onclick="doLogin()">Sign In →</button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerSection" style="display:none">
+      <div class="form-greeting">Create Account</div>
+      <h2 class="form-title">Join PoultrySmart 🚀</h2>
+      <p class="form-sub">Register your farm or account today</p>
+      <div class="form-group">
+        <label>Full Name</label>
+        <div class="input-with-icon">
+          <span class="input-icon">👤</span>
+          <input type="text" class="form-control" placeholder="Your full name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-with-icon">
+          <span class="input-icon">📧</span>
+          <input type="email" class="form-control" placeholder="your@email.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <div class="input-with-icon">
+          <span class="input-icon">📱</span>
+          <input type="tel" class="form-control" placeholder="9876543210">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-with-icon">
+          <span class="input-icon">🔒</span>
+          <input type="password" class="form-control" placeholder="Create a password">
+        </div>
+      </div>
+      <button class="btn-login" onclick="alert('Registration coming soon! Use demo credentials to explore.')">Create Account →</button>
+    </div>
+
+    <div class="form-footer">
+      <p>🔐 Secure login powered by PoultrySmart Auth</p>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script>
+  const roleConfig = {
+    admin:    { label:'Admin Portal',    email:'admin@poultrysmart.in', pass:'admin123',    emoji:'👑', dest:'dashboard-admin.html' },
+    farmer:   { label:'Farmer Portal',   email:'ravi@farm.in',          pass:'farmer123',   emoji:'🌾', dest:'dashboard-farmer.html' },
+    customer: { label:'Customer Portal', email:'priya@gmail.com',       pass:'customer123', emoji:'🛒', dest:'dashboard-customer.html' }
+  };
+  let currentRole = 'admin';
+
+  // Read ?role from URL
+  const urlRole = new URLSearchParams(location.search).get('role');
+  if(urlRole && roleConfig[urlRole]){
+    currentRole = urlRole;
+    document.querySelectorAll('.role-btn').forEach((b,i)=>{
+      b.classList.toggle('active',['admin','farmer','customer'][i]===urlRole);
+    });
+  }
+  updateRoleUI();
+
+  function selectRole(role, btn){
+    currentRole = role;
+    document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    updateRoleUI();
+  }
+
+  function updateRoleUI(){
+    const cfg = roleConfig[currentRole];
+    document.getElementById('formGreeting').textContent = cfg.label;
+    document.getElementById('demoEmail').textContent = cfg.email;
+    document.getElementById('demoPass').textContent = cfg.pass;
+    document.getElementById('loginEmail').value = cfg.email;
+    document.getElementById('loginPassword').value = cfg.pass;
+  }
+
+  function doLogin(){
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPassword').value;
+    const btn   = document.getElementById('loginBtn');
+    btn.textContent = 'Signing in…';
+    btn.classList.add('loading');
+    setTimeout(()=>{
+      const result = PS.auth.login(email, pass);
+      if(result.success){
+        const roleMap = {admin:'dashboard-admin.html', farmer:'dashboard-farmer.html', customer:'dashboard-customer.html'};
+        window.location.href = roleMap[result.user.role] || 'index.html';
+      } else {
+        document.getElementById('formError').classList.add('show');
+        btn.textContent = 'Sign In →';
+        btn.classList.remove('loading');
+      }
+    }, 900);
+  }
+
+  function switchTab(tab){
+    document.getElementById('loginSection').style.display = tab==='login' ? '' : 'none';
+    document.getElementById('registerSection').style.display = tab==='register' ? '' : 'none';
+    document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+    document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  }
+
+  function togglePass(){
+    const f = document.getElementById('loginPassword');
+    f.type = f.type==='password' ? 'text' : 'password';
+  }
+
+  function toggleDark(){
+    const d = document.documentElement;
+    const next = d.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+    d.setAttribute('data-theme', next);
+    document.getElementById('dark-toggle').textContent = next==='dark' ? '☀️' : '🌙';
+  }
+
+  document.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>

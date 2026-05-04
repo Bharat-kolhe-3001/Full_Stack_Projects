@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #f4f6f8;
+        }
+
+        /* Header */
+        .header {
+            background: #2e7d32;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        /* Container */
+        .container {
+            padding: 15px;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            margin: 5px 0;
+        }
+
+        .card p {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        /* Summary */
+        .summary {
+            margin-top: 20px;
+        }
+
+        .box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .income { color: green; }
+        .expense { color: red; }
+
+        /* Profit */
+        .profit-box {
+            background: #e8f5e9;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .profit {
+            font-size: 32px;
+            font-weight: bold;
+            color: green;
+        }
+
+        /* Buttons */
+        .actions {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .actions button {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #2e7d32;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .actions button:hover {
+            background: #1b5e20;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>🐔 Poultry Admin Dashboard</h2>
+    <p>Today: 03 Jan 2026</p>
+</div>
+
+<div class="container">
+
+    <!-- Cards -->
+    <div class="cards">
+        <div class="card">
+            <h3>🐔 Active Hens</h3>
+            <p>3100</p>
+        </div>
+        <div class="card">
+            <h3>🥚 Eggs Today</h3>
+            <p>2850</p>
+        </div>
+        <div class="card">
+            <h3>⚰️ Mortality</h3>
+            <p>2</p>
+        </div>
+    </div>
+
+    <!-- Income Expense -->
+    <div class="summary">
+        <div class="box income">
+            <span>💰 Income Today</span>
+            <span>₹14,250</span>
+        </div>
+        <div class="box expense">
+            <span>💸 Expense Today</span>
+            <span>₹9,600</span>
+        </div>
+    </div>
+
+    <!-- Profit -->
+    <div class="profit-box">
+        <h3>📈 Profit Today</h3>
+        <div class="profit">₹4,650</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+        <button>➕ Add Income</button>
+        <button>➕ Add Expense</button>
+        <button>🐔 Birds</button>
+        <button>🥚 Eggs</button>
+        <button>📄 Reports</button>
+        <button onclick="logout()">🚪 Logout</button>
+    </div>
+
+</div>
+
+<script>
+    function logout() {
+        window.location.href = "login.html";
+    }
+</script>
+
+</body>
+</html>
