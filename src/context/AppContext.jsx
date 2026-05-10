@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { users, credMap } from '../data/psData';
+import { apiUrl } from '../config/api';
 
 const AppContext = createContext(null);
 
@@ -25,20 +25,56 @@ export function AppProvider({ children }) {
   useEffect(() => { localStorage.setItem('ps_cart', JSON.stringify(cart)); }, [cart]);
   useEffect(() => { localStorage.setItem('ps_wishlist', JSON.stringify(wishlist)); }, [wishlist]);
 
-  const login = (email, password) => {
-    const cred = credMap[email];
-    if (cred && cred.pass === password) {
-      const user = users.find(u => u.id === cred.userId);
-      setCurrentUser(user);
-      localStorage.setItem('ps_user', JSON.stringify(user));
-      return { success: true, user };
+  const login = async (email, password) => {
+    try {
+      const response = await fetch(apiUrl('/api/auth/login'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json().catch(() => ({}));
+      
+      if (data.success) {
+        setCurrentUser(data.user);
+        localStorage.setItem('ps_user', JSON.stringify(data.user));
+        localStorage.setItem('ps_token', data.token);
+        return { success: true, user: data.user };
+      } else {
+        return { success: false, message: data.message || 'Login failed' };
+      }
+    } catch (error) {
+      console.error('Backend login failed', error);
+      return { success: false, message: 'Unable to connect to server' };
     }
-    return { success: false };
+  };
+
+  const register = async (userData) => {
+    try {
+      const response = await fetch(apiUrl('/api/auth/register'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setCurrentUser(data.user);
+        localStorage.setItem('ps_user', JSON.stringify(data.user));
+        localStorage.setItem('ps_token', data.token);
+        return { success: true, user: data.user };
+      } else {
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Registration failed', error);
+      return { success: false, message: 'Server error during registration' };
+    }
   };
 
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem('ps_user');
+    localStorage.removeItem('ps_token');
   };
 
   const addToCart = (product) => {
@@ -66,7 +102,7 @@ export function AppProvider({ children }) {
   const isInWishlist = (productId) => wishlist.some(p => p.id === productId);
 
   return (
-    <AppContext.Provider value={{ currentUser, login, logout, darkMode, setDarkMode, lang, setLang, cart, addToCart, removeFromCart, changeQty, clearCart, cartTotal, wishlist, addToWishlist, removeFromWishlist, isInWishlist }}>
+    <AppContext.Provider value={{ currentUser, login, register, logout, darkMode, setDarkMode, lang, setLang, cart, addToCart, removeFromCart, changeQty, clearCart, cartTotal, wishlist, addToWishlist, removeFromWishlist, isInWishlist }}>
       {children}
     </AppContext.Provider>
   );

@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
 import FarmerDashboard from './pages/FarmerDashboard';
 import CustomerDashboard from './pages/CustomerDashboard';
+import { ToastContainer } from './components/Toast';
 
 function ProtectedRoute({ children, role }) {
   const { currentUser } = useApp();
@@ -32,6 +33,7 @@ export default function App() {
     <BrowserRouter>
       <AppProvider>
         <AppRoutes />
+        <ToastContainer />
       </AppProvider>
     </BrowserRouter>
   );

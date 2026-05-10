@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import './CustomerDashboard.css';
-import { products, orders } from '../data/psData';
+import { apiUrl } from '../config/api';
+import { toast, OrderSuccessModal } from '../components/Toast';
 
 const navItems = [
   { icon: '🛒', label: 'Shop' },
@@ -26,17 +27,38 @@ export default function CustomerDashboard() {
   const [cartOpen, setCartOpen] = useState(false);
   const [addedItems, setAddedItems] = useState({});
   const [wishedItems, setWishedItems] = useState({});
+  const [productsData, setProductsData] = useState([]);
+  const [ordersData, setOrdersData] = useState([]);
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [successOrder, setSuccessOrder] = useState(null);
 
   useEffect(() => {
     if (!currentUser || currentUser.role !== 'customer') navigate('/login');
   }, [currentUser, navigate]);
 
+  useEffect(() => {
+    if (!currentUser?.id) return;
+    const fetchData = async () => {
+      try {
+        const [productsRes, ordersRes] = await Promise.all([
+          fetch(apiUrl('/api/data/products?active=true')),
+          fetch(apiUrl(`/api/data/orders?customerId=${currentUser.id}`)),
+        ]);
+        if (productsRes.ok) setProductsData(await productsRes.json());
+        if (ordersRes.ok) setOrdersData(await ordersRes.json());
+      } catch (err) {
+        console.error('Failed to load customer dashboard data', err);
+      }
+    };
+    fetchData();
+  }, [currentUser?.id]);
+
   if (!currentUser || currentUser.role !== 'customer') return null;
 
   const firstName = currentUser.name.split(' ')[0];
-  const myOrders = orders.filter(o => o.customerId === currentUser.id);
+  const myOrders = ordersData.filter(o => o.customerId === currentUser.id);
 
-  let filteredProducts = products.filter(p => p.isActive);
+  let filteredProducts = productsData.filter(p => p.isActive);
   if (activeFilter !== 'all') {
     if (activeFilter === 'fresh') filteredProducts = filteredProducts.filter(p => p.isFreshToday);
     else filteredProducts = filteredProducts.filter(p => p.type === activeFilter);
@@ -61,10 +83,41 @@ export default function CustomerDashboard() {
     }
   };
 
-  const handleCheckout = () => {
-    alert('✅ Order placed successfully!\n\nYour fresh produce will be delivered within 24 hours.\nPayment: COD\n\nThank you for choosing PoultrySmart!');
-    clearCart();
-    setCartOpen(false);
+  const handleCheckout = async () => {
+    if (!currentUser?.id || cart.length === 0 || placingOrder) return;
+    setPlacingOrder(true);
+    try {
+      const payload = {
+        customerId: currentUser.id,
+        items: cart.map(item => ({
+          productId: item.productId,
+          name: item.name,
+          qty: item.qty,
+          price: item.price,
+        })),
+        totalAmount: cartTotal + 40,
+        deliveryAddress: '14/A, Shivaji Nagar, Pune 411005',
+        paymentMethod: 'COD',
+        paymentStatus: 'pending',
+      };
+
+      const res = await fetch(apiUrl('/api/data/orders'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.message || 'Order failed');
+
+      setOrdersData(prev => [data.order, ...prev]);
+      clearCart();
+      setCartOpen(false);
+      setSuccessOrder(data.order);
+    } catch (error) {
+      toast.error('Order Failed', error.message || 'Please try again.');
+    } finally {
+      setPlacingOrder(false);
+    }
   };
 
   const handleLogout = () => { logout(); navigate('/login'); };
@@ -73,6 +126,14 @@ export default function CustomerDashboard() {
 
   return (
     <div className="customer-page">
+      {/* SUCCESS MODAL */}
+      {successOrder && (
+        <OrderSuccessModal
+          orderId={successOrder.id}
+          onContinue={() => setSuccessOrder(null)}
+          onTrack={() => { setSuccessOrder(null); setActiveTab(1); }}
+        />
+      )}
       {/* NAVBAR */}
       <nav className="cust-navbar">
         <div className="cust-nav-brand">🐔 PoultrySmart</div>
@@ -266,7 +327,7 @@ export default function CustomerDashboard() {
 
       {/* ─── TAB 3: PROFILE ─── */}
       {activeTab === 3 && (
-        <ProfileTab currentUser={currentUser} />
+        <ProfileTab currentUser={currentUser} myOrders={myOrders} />
       )}
 
       {/* CART DRAWER */}
@@ -304,7 +365,9 @@ export default function CustomerDashboard() {
               <span>₹{cartTotal.toLocaleString('en-IN')}</span>
             </div>
             <div className="cart-delivery">+ ₹40 delivery • Free above ₹500</div>
-            <button className="btn-checkout-c" onClick={handleCheckout}>Proceed to Pay →</button>
+            <button className="btn-checkout-c" onClick={handleCheckout} disabled={placingOrder}>
+              {placingOrder ? 'Placing Order...' : 'Proceed to Pay →'}
+            </button>
           </div>
         )}
       </div>
@@ -313,16 +376,20 @@ export default function CustomerDashboard() {
 }
 
 /* ─── Profile Sub-component ─── */
-function ProfileTab({ currentUser }) {
+function ProfileTab({ currentUser, myOrders }) {
+  const { darkMode, setDarkMode } = useApp();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(currentUser.name);
   const [phone, setPhone] = useState(currentUser.phone || '');
   const [address, setAddress] = useState('14/A, Shivaji Nagar, Pune 411005');
   const [saved, setSaved] = useState(false);
+  const [orderNotif, setOrderNotif] = useState(true);
+  const [emailPromo, setEmailPromo] = useState(false);
 
   const handleSave = () => {
     setSaved(true);
     setEditing(false);
+    toast.success('Profile Updated', 'Your changes have been saved.');
     setTimeout(() => setSaved(false), 2500);
   };
 
@@ -341,11 +408,11 @@ function ProfileTab({ currentUser }) {
           <div className="profile-email-display">{currentUser.email}</div>
           <div className="profile-stats">
             <div className="profile-stat">
-              <div className="ps-val">{orders.filter(o => o.customerId === currentUser.id).length}</div>
+              <div className="ps-val">{myOrders.length}</div>
               <div className="ps-label">Orders</div>
             </div>
             <div className="profile-stat">
-              <div className="ps-val">{orders.filter(o => o.customerId === currentUser.id && o.status === 'delivered').length}</div>
+              <div className="ps-val">{myOrders.filter(o => o.status === 'delivered').length}</div>
               <div className="ps-label">Delivered</div>
             </div>
           </div>
@@ -399,21 +466,21 @@ function ProfileTab({ currentUser }) {
             <div className="pref-row">
               <span>🔔 Order Notifications</span>
               <label className="toggle-switch">
-                <input type="checkbox" defaultChecked />
+                <input type="checkbox" checked={orderNotif} onChange={e => { setOrderNotif(e.target.checked); toast.info('Preference Saved', e.target.checked ? 'Order notifications enabled.' : 'Order notifications disabled.'); }} />
                 <span className="toggle-slider" />
               </label>
             </div>
             <div className="pref-row">
               <span>📧 Email Promotions</span>
               <label className="toggle-switch">
-                <input type="checkbox" />
+                <input type="checkbox" checked={emailPromo} onChange={e => { setEmailPromo(e.target.checked); toast.info('Preference Saved', e.target.checked ? 'Promotional emails enabled.' : 'Promotional emails disabled.'); }} />
                 <span className="toggle-slider" />
               </label>
             </div>
             <div className="pref-row">
               <span>🌙 Dark Mode</span>
               <label className="toggle-switch">
-                <input type="checkbox" defaultChecked={document.documentElement.getAttribute('data-theme') === 'dark'} onChange={() => {}} />
+                <input type="checkbox" checked={darkMode} onChange={() => setDarkMode(d => !d)} />
                 <span className="toggle-slider" />
               </label>
             </div>

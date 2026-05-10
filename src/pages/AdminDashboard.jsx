@@ -4,7 +4,8 @@ import { Chart, registerables } from 'chart.js';
 import { useApp } from '../context/AppContext';
 import DashboardLayout from '../components/DashboardLayout';
 import '../components/DashboardLayout.css';
-import { farms, users, orders, productionLogs, transactions, notifications, stats, healthLogs } from '../data/psData';
+import { apiUrl } from '../config/api';
+import { toast, ConfirmDialog, OrderDetailModal } from '../components/Toast';
 
 Chart.register(...registerables);
 
@@ -41,10 +42,33 @@ export default function AdminDashboard() {
   const { currentUser } = useApp();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
+  const [dashboardData, setDashboardData] = useState({
+    farms: [],
+    users: [],
+    orders: [],
+    productionLogs: [],
+    transactions: [],
+    notifications: [],
+    healthLogs: [],
+  });
 
   useEffect(() => {
     if (!currentUser || currentUser.role !== 'admin') navigate('/login');
   }, [currentUser, navigate]);
+
+  useEffect(() => {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    const fetchData = async () => {
+      try {
+        const res = await fetch(apiUrl('/api/data/dashboard/admin'));
+        if (!res.ok) return;
+        setDashboardData(await res.json());
+      } catch (err) {
+        console.error('Failed to load admin dashboard data', err);
+      }
+    };
+    fetchData();
+  }, [currentUser]);
 
   const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -52,14 +76,14 @@ export default function AdminDashboard() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 0: return <DashboardOverview />;
-      case 1: return <FarmsView />;
-      case 2: return <UsersView />;
-      case 3: return <OrdersView />;
-      case 4: return <FinancialsView />;
-      case 5: return <ProductionView />;
-      case 6: return <HealthAlertsView />;
-      case 7: return <NotificationsView />;
+      case 0: return <DashboardOverview data={dashboardData} setActiveTabExternal={setActiveTab} />;
+      case 1: return <FarmsView data={dashboardData} />;
+      case 2: return <UsersView data={dashboardData} />;
+      case 3: return <OrdersView data={dashboardData} />;
+      case 4: return <FinancialsView data={dashboardData} />;
+      case 5: return <ProductionView data={dashboardData} />;
+      case 6: return <HealthAlertsView data={dashboardData} />;
+      case 7: return <NotificationsView data={dashboardData} />;
       case 8: return <SettingsView />;
       default: return (
         <div className="placeholder-view">
@@ -84,7 +108,8 @@ export default function AdminDashboard() {
   );
 }
 
-function DashboardOverview() {
+function DashboardOverview({ data, setActiveTabExternal }) {
+  const { farms, users, orders, productionLogs, transactions, notifications } = data;
   const revenueRef = useRef(null);
   const farmStatusRef = useRef(null);
   const eggRef = useRef(null);
@@ -141,7 +166,7 @@ function DashboardOverview() {
     }
 
     return () => { chartsRef.current.forEach(c => c.destroy()); chartsRef.current = []; };
-  }, []);
+  }, [transactions, productionLogs, users]);
 
   return (
     <>
@@ -149,25 +174,25 @@ function DashboardOverview() {
       <div className="kpi-grid">
         <div className="kpi-card green">
           <div className="kpi-icon-box green">🏭</div>
-          <div className="kpi-val"><AnimCounter target={stats.platformFarms} /></div>
+          <div className="kpi-val"><AnimCounter target={farms.length} /></div>
           <div className="kpi-label">Total Registered Farms</div>
           <div className="kpi-trend up">↑ 3 new this week</div>
         </div>
         <div className="kpi-card yellow">
           <div className="kpi-icon-box yellow">🥚</div>
-          <div className="kpi-val"><AnimCounter target={stats.platformEggsTracked} /></div>
+          <div className="kpi-val"><AnimCounter target={productionLogs.reduce((s, l) => s + (l.netEggs || 0), 0)} /></div>
           <div className="kpi-label">Eggs Tracked (Platform)</div>
           <div className="kpi-trend up">↑ 12% vs last month</div>
         </div>
         <div className="kpi-card purple">
           <div className="kpi-icon-box purple">📦</div>
-          <div className="kpi-val"><AnimCounter target={stats.platformOrders} /></div>
+          <div className="kpi-val"><AnimCounter target={orders.length} /></div>
           <div className="kpi-label">Total Orders Fulfilled</div>
           <div className="kpi-trend up">↑ 8% this quarter</div>
         </div>
         <div className="kpi-card red">
           <div className="kpi-icon-box red">✅</div>
-          <div className="kpi-val">1</div>
+          <div className="kpi-val">{farms.filter(f => f.status === 'pending').length}</div>
           <div className="kpi-label">Farms Awaiting Approval</div>
           <div className="kpi-trend down">⚠ Action required</div>
         </div>
@@ -190,7 +215,7 @@ function DashboardOverview() {
       {/* TABLES */}
       <div className="tables-row">
         <div className="table-card">
-          <div className="table-header"><h3>🏭 Farm Registry</h3><button className="view-all">View All →</button></div>
+          <div className="table-header"><h3>🏭 Farm Registry</h3><button className="view-all" onClick={() => setActiveTabExternal(1)}>View All →</button></div>
           <table className="ps-table">
             <thead><tr><th>Farm</th><th>Owner</th><th>Birds</th><th>Status</th></tr></thead>
             <tbody>
@@ -206,7 +231,7 @@ function DashboardOverview() {
           </table>
         </div>
         <div className="table-card">
-          <div className="table-header"><h3>📦 Recent Orders</h3><button className="view-all">View All →</button></div>
+          <div className="table-header"><h3>📦 Recent Orders</h3><button className="view-all" onClick={() => setActiveTabExternal(3)}>View All →</button></div>
           <table className="ps-table">
             <thead><tr><th>Order</th><th>Product</th><th>Amount</th><th>Status</th></tr></thead>
             <tbody>
@@ -236,7 +261,7 @@ function DashboardOverview() {
           <div className="chart-wrap-sm"><canvas ref={userRef} /></div>
         </div>
         <div className="table-card">
-          <div className="table-header"><h3>🔔 Notifications</h3><button className="view-all">Mark all read</button></div>
+          <div className="table-header"><h3>🔔 Notifications</h3><button className="view-all" onClick={() => toast.success('Notifications', 'All notifications marked as read.')}>Mark all read</button></div>
           <div className="notif-list">
             {notifications.map(n => {
               const ago = Math.round((Date.now() - new Date(n.createdAt)) / 3600000);
@@ -258,18 +283,33 @@ function DashboardOverview() {
   );
 }
 
-function FarmsView() {
+function FarmsView({ data }) {
+  const { farms } = data;
+  const [localFarms, setLocalFarms] = useState(farms);
+  const [confirm, setConfirm] = useState(null);
+
+  useEffect(() => setLocalFarms(farms), [farms]);
+
+  const suspendFarm = (farmId) => {
+    setLocalFarms(prev => prev.map(f => f.id === farmId ? { ...f, status: f.status === 'suspended' ? 'active' : 'suspended' } : f));
+    const farm = localFarms.find(f => f.id === farmId);
+    const newStatus = farm?.status === 'suspended' ? 'active' : 'suspended';
+    toast.warning('Farm Status Changed', `${farm?.name} is now ${newStatus}.`);
+    setConfirm(null);
+  };
+
   return (
     <div className="view-section">
+      {confirm && <ConfirmDialog icon="⚠️" title="Suspend Farm?" message={`Are you sure you want to suspend ${confirm.name}? This will prevent them from using the platform.`} confirmLabel="Suspend" confirmClass="danger" onConfirm={() => suspendFarm(confirm.id)} onCancel={() => setConfirm(null)} />}
       <div className="section-header">
         <h2>Registered Farms</h2>
-        <button className="btn-primary">Add New Farm</button>
+        <button className="btn-primary" onClick={() => toast.info('Coming Soon', 'Farm creation form will be available in the next update.')}>+ Add New Farm</button>
       </div>
       <div className="table-card full-width">
         <table className="ps-table">
           <thead><tr><th>ID</th><th>Farm Name</th><th>Location</th><th>Owner ID</th><th>Total Birds</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
-            {farms.map(f => (
+            {localFarms.map(f => (
               <tr key={f.id}>
                 <td>{f.id}</td>
                 <td><strong>{f.name}</strong></td>
@@ -278,8 +318,8 @@ function FarmsView() {
                 <td>{f.totalBirds.toLocaleString('en-IN')}</td>
                 <td><span className={`badge ${f.status}`}>{f.status}</span></td>
                 <td>
-                  <button className="action-btn">Edit</button>
-                  <button className="action-btn danger">Suspend</button>
+                  <button className="action-btn" onClick={() => toast.info('Edit Farm', `Editing ${f.name} — full edit form coming soon.`)}>Edit</button>
+                  <button className="action-btn danger" onClick={() => setConfirm(f)}>{f.status === 'suspended' ? 'Unsuspend' : 'Suspend'}</button>
                 </td>
               </tr>
             ))}
@@ -290,27 +330,40 @@ function FarmsView() {
   );
 }
 
-function UsersView() {
+function UsersView({ data }) {
+  const { users } = data;
+  const [localUsers, setLocalUsers] = useState(users);
+  const [confirm, setConfirm] = useState(null);
+  useEffect(() => setLocalUsers(users), [users]);
+
+  const deleteUser = (id) => {
+    const u = localUsers.find(u => u.id === id);
+    setLocalUsers(prev => prev.filter(u => u.id !== id));
+    toast.warning('User Removed', `${u?.name} has been removed from the platform.`);
+    setConfirm(null);
+  };
+
   return (
     <div className="view-section">
+      {confirm && <ConfirmDialog icon="🗑️" title="Delete User?" message={`Are you sure you want to permanently delete ${confirm.name}? This action cannot be undone.`} confirmLabel="Delete" confirmClass="danger" onConfirm={() => deleteUser(confirm.id)} onCancel={() => setConfirm(null)} />}
       <div className="section-header">
         <h2>User Management</h2>
-        <button className="btn-primary">Invite User</button>
+        <button className="btn-primary" onClick={() => toast.info('Coming Soon', 'Invite user form coming soon.')}>Invite User</button>
       </div>
       <div className="table-card full-width">
         <table className="ps-table">
           <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Actions</th></tr></thead>
           <tbody>
-            {users.map(u => (
+            {localUsers.map(u => (
               <tr key={u.id}>
-                <td>{u.id}</td>
+                <td>{String(u.id).slice(0,8)}…</td>
                 <td><strong>{u.name}</strong></td>
                 <td>{u.email}</td>
-                <td>{u.phone}</td>
+                <td>{u.phone || '—'}</td>
                 <td><span className={`badge ${u.role}`}>{u.role}</span></td>
                 <td>
-                  <button className="action-btn">Edit</button>
-                  <button className="action-btn danger">Delete</button>
+                  <button className="action-btn" onClick={() => toast.info('Edit User', `Editing ${u.name} — full edit form coming soon.`)}>Edit</button>
+                  <button className="action-btn danger" onClick={() => setConfirm(u)}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -321,20 +374,26 @@ function UsersView() {
   );
 }
 
-function OrdersView() {
+function OrdersView({ data }) {
+  const { orders, users } = data;
+  const [search, setSearch] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const filtered = orders.filter(o => o.id?.toLowerCase().includes(search.toLowerCase()) || o.customerId?.toLowerCase().includes(search.toLowerCase()));
+
   return (
     <div className="view-section">
+      {selectedOrder && <OrderDetailModal order={selectedOrder} users={users} onClose={() => setSelectedOrder(null)} />}
       <div className="section-header">
         <h2>All Orders</h2>
         <div className="search-bar-sm">
-          <input type="text" placeholder="Search orders..." />
+          <input type="text" placeholder="Search by Order ID or Customer..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
       </div>
       <div className="table-card full-width">
         <table className="ps-table">
           <thead><tr><th>Order ID</th><th>Customer ID</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
-            {orders.map(o => (
+            {filtered.map(o => (
               <tr key={o.id}>
                 <td><strong>{o.id}</strong></td>
                 <td>{o.customerId}</td>
@@ -342,7 +401,7 @@ function OrdersView() {
                 <td>₹{o.totalAmount.toLocaleString('en-IN')}</td>
                 <td><span className={`badge ${o.status}`}>{o.status}</span></td>
                 <td>
-                  <button className="action-btn">View Details</button>
+                  <button className="action-btn" onClick={() => setSelectedOrder(o)}>View Details</button>
                 </td>
               </tr>
             ))}
@@ -353,15 +412,26 @@ function OrdersView() {
   );
 }
 
-function FinancialsView() {
+function FinancialsView({ data }) {
+  const { transactions } = data;
   const inc = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
   const exp = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+
+  const downloadReport = () => {
+    const rows = [['Date','Type','Category','Amount','Farm ID'], ...transactions.slice(0,50).map(t => [t.date, t.type, t.category, t.amount, t.farmId])];
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'financial_report.csv'; a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Report Downloaded!', 'financial_report.csv saved to your downloads.');
+  };
   
   return (
     <div className="view-section">
       <div className="section-header">
         <h2>Financials</h2>
-        <button className="btn-primary">Generate Report</button>
+        <button className="btn-primary" onClick={downloadReport}>⬇ Generate Report</button>
       </div>
       <div className="kpi-grid" style={{ marginBottom: '20px' }}>
         <div className="kpi-card green">
@@ -402,7 +472,8 @@ function FinancialsView() {
   );
 }
 
-function ProductionView() {
+function ProductionView({ data }) {
+  const { productionLogs } = data;
   return (
     <div className="view-section">
       <div className="section-header">
@@ -430,7 +501,8 @@ function ProductionView() {
   );
 }
 
-function HealthAlertsView() {
+function HealthAlertsView({ data }) {
+  const { healthLogs } = data;
   return (
     <div className="view-section">
       <div className="section-header">
@@ -457,16 +529,25 @@ function HealthAlertsView() {
   );
 }
 
-function NotificationsView() {
+function NotificationsView({ data }) {
+  const { notifications } = data;
+  const [localNotifs, setLocalNotifs] = useState(notifications);
+  useEffect(() => setLocalNotifs(notifications), [notifications]);
+
+  const markAllRead = () => {
+    setLocalNotifs(prev => prev.map(n => ({ ...n, isRead: true })));
+    toast.success('All Read', 'All notifications have been marked as read.');
+  };
+
   return (
     <div className="view-section">
       <div className="section-header">
         <h2>Notifications & System Alerts</h2>
-        <button className="btn-primary">Mark All as Read</button>
+        <button className="btn-primary" onClick={markAllRead}>✓ Mark All as Read</button>
       </div>
       <div className="table-card full-width" style={{ padding: '0' }}>
         <div className="notif-list" style={{ padding: '0 22px' }}>
-          {notifications.map(n => {
+          {localNotifs.map(n => {
             const ago = Math.round((Date.now() - new Date(n.createdAt)) / 3600000);
             return (
               <div key={n.id} className="notif-item">
@@ -503,7 +584,7 @@ function SettingsView() {
               <label style={{ display: 'block', fontSize: '12px', color: 'var(--text3)', marginBottom: '4px' }}>Admin Email</label>
               <input type="email" defaultValue="admin@poultry.com" style={{ width: '100%', padding: '10px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)' }} />
             </div>
-            <button className="btn-primary" style={{ width: 'fit-content' }}>Save Changes</button>
+            <button className="btn-primary" style={{ width: 'fit-content' }} onClick={() => toast.success('Settings Saved!', 'Platform settings have been updated.')}>Save Changes</button>
           </div>
         </div>
         <div className="chart-card">
@@ -513,7 +594,7 @@ function SettingsView() {
               <label style={{ display: 'block', fontSize: '12px', color: 'var(--text3)', marginBottom: '4px' }}>Platform Fee (%)</label>
               <input type="number" defaultValue="2" style={{ width: '100%', padding: '10px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)' }} />
             </div>
-            <button className="btn-primary" style={{ width: 'fit-content' }}>Update Fees</button>
+            <button className="btn-primary" style={{ width: 'fit-content' }} onClick={() => toast.success('Fees Updated!', 'Platform fee structure has been saved.')}>Update Fees</button>
           </div>
         </div>
       </div>
